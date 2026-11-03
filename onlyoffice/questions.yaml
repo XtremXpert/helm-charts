@@ -3,9 +3,9 @@ categories:
 questions:
   - variable: image.tag
     label: Version du Document Server
-    description: Tag d'image OnlyOffice, par exemple 9.4.0.1. Éviter « latest ».
+    description: Tag d'image OnlyOffice, par exemple 10.0.0.1. Éviter « latest ».
     type: string
-    default: "9.4.0.1"
+    default: "10.0.0.1"
     required: true
     group: Image
 

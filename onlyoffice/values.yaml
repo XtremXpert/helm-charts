@@ -1,5 +1,58 @@
-onlyoffice:
-  jwtSecret: ""
-  hostname: "office.bemade.org"
-  ingress:
-    clusterIssuer: "letsencrypt-dns"
+# Nom des objets rendus. « documentserver » est le nom du Service que le
+# connecteur OnlyOffice d'Odoo appelle : ne pas le changer sans mettre à jour Odoo.
+fullnameOverride: documentserver
+
+replicaCount: 1
+
+image:
+  repository: onlyoffice/documentserver
+  tag: "9.4.0.1"
+  pullPolicy: IfNotPresent
+
+# Recreate : un seul pod, la stratégie d'origine. Évite deux writers concurrents.
+strategy:
+  type: Recreate
+
+jwt:
+  # Secret existant, partagé avec Odoo. On ne le régénère jamais : une nouvelle
+  # clé casserait l'ouverture des documents côté Odoo.
+  existingSecret: onlyoffice-jwt
+  key: JWT_SECRET
+  # Utilisé seulement si existingSecret est vide (installation neuve).
+  secret: ""
+
+env:
+  # Le Document Server est derrière Traefik : les IP privées sont légitimes.
+  allowPrivateIpAddress: true
+  pluginsEnabled: false
+
+resources:
+  requests:
+    cpu: 250m
+    memory: 1536Mi
+  limits:
+    cpu: "2"
+    memory: 4Gi
+
+probes:
+  readiness:
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    failureThreshold: 30
+  liveness:
+    initialDelaySeconds: 180
+    periodSeconds: 30
+    failureThreshold: 5
+
+service:
+  type: ClusterIP
+  port: 80
+
+# Désactivé par défaut : sur vezina-local, le Document Server n'est pas exposé,
+# Odoo l'appelle par le Service interne. Activé, le chart crée l'IngressRoute,
+# le Certificate et les middlewares.
+ingress:
+  enabled: false
+  hostname: office.example.org
+  clusterIssuer: letsencrypt-cloudflare
+  tlsSecretName: onlyoffice-cert

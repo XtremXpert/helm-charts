@@ -1,12 +1,14 @@
+{{- if .Values.ingress.enabled }}
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: onlyoffice
+  name: {{ include "onlyoffice.fullname" . }}
   namespace: {{ .Release.Namespace }}
 spec:
-  secretName: onlyoffice-cert
+  secretName: {{ .Values.ingress.tlsSecretName }}
   dnsNames:
-    - {{ .Values.onlyoffice.hostname }}
+    - {{ .Values.ingress.hostname | quote }}
   issuerRef:
-    name: {{ .Values.onlyoffice.ingress.clusterIssuer }}
+    name: {{ .Values.ingress.clusterIssuer }}
     kind: ClusterIssuer
+{{- end }}

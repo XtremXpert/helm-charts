@@ -1,0 +1,59 @@
+categories:
+  - OnlyOffice
+questions:
+  - variable: image.tag
+    label: Version du Document Server
+    description: Tag d'image OnlyOffice, par exemple 9.4.0.1. Éviter « latest ».
+    type: string
+    default: "9.4.0.1"
+    required: true
+    group: Image
+
+  - variable: jwt.existingSecret
+    label: Secret JWT existant
+    description: >-
+      Nom du Secret contenant la clé partagée avec Odoo. Laisser vide pour en
+      générer un à l'installation.
+    type: string
+    default: onlyoffice-jwt
+    group: Sécurité
+
+  - variable: resources.requests.cpu
+    label: CPU demandé
+    type: string
+    default: 250m
+    group: Ressources
+
+  - variable: resources.limits.memory
+    label: Mémoire maximale
+    type: string
+    default: 4Gi
+    group: Ressources
+
+  - variable: env.pluginsEnabled
+    label: Activer les plugins
+    type: boolean
+    default: false
+    group: Options
+
+  - variable: ingress.enabled
+    label: Exposer par IngressRoute + TLS
+    description: Crée l'IngressRoute Traefik et le Certificate cert-manager.
+    type: boolean
+    default: false
+    group: Exposition
+
+  - variable: ingress.hostname
+    label: Nom d'hôte
+    type: hostname
+    default: office.example.org
+    required: true
+    show_if: ingress.enabled=true
+    group: Exposition
+
+  - variable: ingress.clusterIssuer
+    label: ClusterIssuer cert-manager
+    type: string
+    default: letsencrypt-cloudflare
+    show_if: ingress.enabled=true
+    group: Exposition
